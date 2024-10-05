@@ -14,13 +14,13 @@ namespace CRUDMARKET.WEB.Controllers
     {
         private DB_SuperEntities db = new DB_SuperEntities();
 
-        // GET: Almacen
+        
         public ActionResult Index()
         {
             return View(db.Almacen.ToList());
         }
 
-        // GET: Almacen/Details/5
+        
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -35,15 +35,13 @@ namespace CRUDMARKET.WEB.Controllers
             return View(almacen);
         }
 
-        // GET: Almacen/Create
+     
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Almacen/Create
-        // Para protegerse de ataques de publicación excesiva, habilite las propiedades específicas a las que quiere enlazarse. Para obtener 
-        // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,NOMBRE,PRECIO,CANTIDAD")] Almacen almacen)
@@ -58,7 +56,7 @@ namespace CRUDMARKET.WEB.Controllers
             return View(almacen);
         }
 
-        // GET: Almacen/Edit/5
+       
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -73,9 +71,7 @@ namespace CRUDMARKET.WEB.Controllers
             return View(almacen);
         }
 
-        // POST: Almacen/Edit/5
-        // Para protegerse de ataques de publicación excesiva, habilite las propiedades específicas a las que quiere enlazarse. Para obtener 
-        // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID,NOMBRE,PRECIO,CANTIDAD")] Almacen almacen)
@@ -89,7 +85,7 @@ namespace CRUDMARKET.WEB.Controllers
             return View(almacen);
         }
 
-        // GET: Almacen/Delete/5
+        
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -104,7 +100,7 @@ namespace CRUDMARKET.WEB.Controllers
             return View(almacen);
         }
 
-        // POST: Almacen/Delete/5
+        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
