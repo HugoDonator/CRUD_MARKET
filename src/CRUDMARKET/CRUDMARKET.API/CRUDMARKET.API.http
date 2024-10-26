@@ -1,0 +1,6 @@
+@CRUDMARKET.API_HostAddress = http://localhost:5276
+
+GET {{CRUDMARKET.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
