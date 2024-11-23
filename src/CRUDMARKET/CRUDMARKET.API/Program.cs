@@ -1,6 +1,6 @@
-using CRUDMARKET.DOMAIN.Context;
+using CRUDMARKET.INFRASTRUCTURE.Context;
+using CRUDMARKET.INFRASTRUCTURE.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,9 +11,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Inyección de dependencias para AppDbContext usando la cadena de conexión
+// Registrar el DbContext para que se pueda inyectar en el repositorio
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Registrar el repositorio AlmacenRepository
+builder.Services.AddScoped<AlmacenRepository>();
 
 var app = builder.Build();
 

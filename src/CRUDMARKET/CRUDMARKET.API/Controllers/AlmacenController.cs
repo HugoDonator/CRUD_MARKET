@@ -1,12 +1,9 @@
-﻿using CRUDMARKET.DOMAIN.Context;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
+﻿using CRUDMARKET.API.Controllers;
 using CRUDMARKET.DOMAIN.Entities;
+using CRUDMARKET.INFRASTRUCTURE.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CRUDMARKET.API.Controllers
 {
@@ -14,88 +11,102 @@ namespace CRUDMARKET.API.Controllers
     [ApiController]
     public class AlmacenController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly AlmacenRepository _repository;
 
-        public AlmacenController(AppDbContext context)
+        public AlmacenController(AlmacenRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
+        // GET: api/Almacen
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Almacen>>> GetAlmacenes()
         {
-            return await _context.Almacenes.ToListAsync();
+            try
+            {
+                var almacenes = await _repository.GetAllAsync();
+                return Ok(almacenes);
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, $"Error interno: {ex.Message}");
+            }
         }
 
+        // GET: api/Almacen/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Almacen>> GetAlmacen(int id)
         {
-            var almacen = await _context.Almacenes.FindAsync(id);
-
-            if (almacen == null)
+            try
             {
-                return NotFound();
+                var almacen = await _repository.GetByIdAsync(id);
+                if (almacen == null)
+                {
+                    return NotFound($"Almacén con ID {id} no encontrado.");
+                }
+
+                return Ok(almacen);
             }
-
-            return almacen;
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, $"Error interno: {ex.Message}");
+            }
         }
 
+        // POST: api/Almacen
         [HttpPost]
-        public async Task<ActionResult<Almacen>> PostAlmacen(Almacen almacen)
+        public async Task<ActionResult> PostAlmacen([FromBody] Almacen almacen)
         {
-            _context.Almacenes.Add(almacen);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetAlmacen), new { id = almacen.Id }, almacen);
+            try
+            {
+                await _repository.AddAsync(almacen);
+                return CreatedAtAction(nameof(GetAlmacen), new { id = almacen.Id }, almacen);
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, $"Error interno: {ex.Message}");
+            }
         }
 
+        // PUT: api/Almacen/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAlmacen(int id, Almacen almacen)
+        public async Task<ActionResult> PutAlmacen(int id, [FromBody] Almacen almacen)
         {
             if (id != almacen.Id)
             {
-                return BadRequest();
+                return BadRequest("El ID del parámetro no coincide con el ID del objeto.");
             }
-
-            _context.Entry(almacen).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repository.UpdateAsync(almacen);
+                return NoContent();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (System.Exception ex)
             {
-                if (!AlmacenExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500, $"Error interno: {ex.Message}");
             }
-
-            return NoContent();
         }
 
+        // DELETE: api/Almacen/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAlmacen(int id)
+        public async Task<ActionResult> DeleteAlmacen(int id)
         {
-            var almacen = await _context.Almacenes.FindAsync(id);
-            if (almacen == null)
+            try
             {
-                return NotFound();
+                var almacen = await _repository.GetByIdAsync(id);
+                if (almacen == null)
+                {
+                    return NotFound($"Almacén con ID {id} no encontrado.");
+                }
+
+                await _repository.DeleteAsync(id);
+                return NoContent();
             }
-
-            _context.Almacenes.Remove(almacen);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool AlmacenExists(int id)
-        {
-            return _context.Almacenes.Any(e => e.Id == id);
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, $"Error interno: {ex.Message}");
+            }
         }
     }
 }
